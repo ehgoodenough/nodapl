@@ -7,14 +7,16 @@ var ShortID = require("shortid")
 
 var WIDTH = 1200
 var HEIGHT = 900
+
 var PIXEL = Pixi.Texture.fromImage(require("images/pixel.png"))
+var TRUCK = Pixi.Texture.fromImage(require("images/truck.png"))
 
 ///////////
 // Pixi //
 /////////
 
 Pixi.renderer = Pixi.autoDetectRenderer(WIDTH, HEIGHT)
-Pixi.renderer.backgroundColor = 0x444444
+Pixi.renderer.backgroundColor = 0x458B00
 Pixi.render = function(container) {this.renderer.render(container)}
 document.body.appendChild(Pixi.renderer.view)
 
@@ -53,9 +55,41 @@ Firebase.initializeApp({
     messagingSenderId: "681965971322"
 })
 
-///////////
-// Me!! //
-/////////
+//////////
+// Sky //
+////////
+
+var sky = new Pixi.Sprite(PIXEL)
+sky.scale.x = WIDTH
+sky.scale.y = HEIGHT / 2
+sky.tint = 0x87CEEB
+game.addChild(sky)
+
+////////////
+// Truck //
+//////////
+
+class Truck extends Pixi.Sprite {
+    constructor() {
+        super(TRUCK)
+        
+        this.scale.x = 3
+        this.scale.y = 3
+        
+        this.anchor.x = 0
+        this.anchor.y = 1
+        
+        this.position.x = WIDTH / 8 
+        this.position.y = HEIGHT - 10
+    }
+}
+
+var truck = new Truck()
+game.addChild(truck)
+
+//////////////
+// Persons //
+////////////
 
 class Person extends Pixi.Sprite {
     constructor(person = new Object()) {
@@ -66,8 +100,8 @@ class Person extends Pixi.Sprite {
         this.isPerson = true
         
         this.id = person.id || ShortID.generate()
-        this.position.x = !!person.position ? person.position.x : WIDTH / 2
-        this.position.y = !!person.position ? person.position.y : WIDTH / 2
+        this.position.x = !!person.position ? person.position.x : WIDTH / 8
+        this.position.y = !!person.position ? person.position.y : HEIGHT * 0.75
         
         this.anchor.x = 0.5
         this.anchor.y = 0.5
@@ -141,7 +175,6 @@ var loop = new Afloop(function(delta) {
 
 Firebase.database().ref("/users").on("child_added", function(data) {
     data = data.val()
-    
     if(data.id != me.id) {
         game.addChild(new Person(data))
     }
@@ -149,7 +182,6 @@ Firebase.database().ref("/users").on("child_added", function(data) {
 
 Firebase.database().ref("/users").on("child_changed", function(data) {
     data = data.val()
-    
     if(data.id != me.id) {
         if(game.persons[data.id]) {
             game.persons[data.id].position.x = data.position.x
@@ -160,7 +192,6 @@ Firebase.database().ref("/users").on("child_changed", function(data) {
 
 Firebase.database().ref("/users").on("child_removed", function(data) {
     data = data.val()
-    
     if(data.id != me.id) {
         if(game.persons[data.id]) {
             game.removeChild(game.persons[data.id])

@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "camelcase": 1,
+    "indent": [1, 4],
+    "semi": [1, "never"],
+    "quotes": [1, "double"],
+    "space-before-blocks": 2
+  }
+}

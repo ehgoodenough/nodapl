@@ -5,5 +5,8 @@
     "semi": [1, "never"],
     "quotes": [1, "double"],
     "space-before-blocks": 2
+  },
+  "parserOptions": {
+    "ecmaVersion": 6
   }
 }

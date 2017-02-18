@@ -1,11 +1,15 @@
 {
-  "name": "sjmmo",
+  "name": "nodapl",
   "version": "1.0.0",
   "description": ":)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ehgoodenough/nodapl"
+  },
   "dependencies": {
     "afloop": "^1.0.2",
-    "codeglue": "^1.1.1",
+    "codeglue": "^1.1.4",
     "firebase": "^3.6.9",
     "keyb": "^1.1.0",
     "pixi.js": "^4.3.5",

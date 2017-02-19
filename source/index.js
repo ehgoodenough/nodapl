@@ -141,19 +141,26 @@ class Truck extends Pixi.Sprite {
         }
     }
     getPushback() {
-        // if(Object.keys(this.parent.persons).length <= 1) {
-        //     if(this.position.x < (WIDTH / 3)) {
-        //         return 1
-        //     } else {
-        //         return 0
-        //     }
-        // }
-        // 
-        // return 2
+        var count = 0
+        for(var key in this.parent.persons) {
+            var person = this.parent.persons[key]
+            if(truck.position.x - person.position.x < 16) {
+                count += 1
+            }
+        }
         
-        return 1
+        console.log(count)
+        
+        if(this.position.x > this.startmark + (UNIT * count)) {
+            return 0
+        } else {
+            return 1
+        }
     }
 }
+
+var PEOPLE_NEEDED = 10
+var UNIT = (WIDTH * (7/8)) / PEOPLE_NEEDED
 
 var truck = new Truck()
 game.addChild(truck)
@@ -211,6 +218,9 @@ class Person extends Pixi.extras.AnimatedSprite {
     update() {
         this.scale.x = this.direction
         
+        // removing this because of issue
+        // with movements being unable
+        // to update when not moving
         // if(this.isMoving) {
         //     this.isMoving = false
         if(this.direction > 0 && truck.position.x - this.position.x < 16) {
@@ -227,7 +237,6 @@ class Person extends Pixi.extras.AnimatedSprite {
 }
 
 var me = new Person()
-window.me = me
 
 game.addChild(me)
 me.syncOnDisconnect()
@@ -258,8 +267,8 @@ var loop = new Afloop(function(delta) {
     }
     if(Keyb.isDown("S") || Keyb.isDown("<down>")) {
         me.position.y += me.speed * delta
-        if(me.position.y > HEIGHT) {
-            me.position.y = HEIGHT
+        if(me.position.y > HEIGHT - 64) {
+            me.position.y = HEIGHT - 64
         }
         me.isMoving = true
         me.sync()
@@ -309,7 +318,14 @@ var loop = new Afloop(function(delta) {
         document.getElementById("you-win").style.display = "none"
     }
     
-    document.getElementById("players-playing").innerHTML = "People Needed: " + Object.keys(game.persons).length + "/10"
+    var count = 0
+    for(var key in game.persons) {
+        var person = game.persons[key]
+        if(truck.position.x - person.position.x < 16) {
+            count += 1
+        }
+    }
+    document.getElementById("players-playing").innerHTML = "People Pushing: " + count + "/" + PEOPLE_NEEDED
 })
 
 ///////////

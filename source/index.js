@@ -33,7 +33,7 @@ var PERSON = {
 Pixi.renderer = Pixi.autoDetectRenderer(WIDTH, HEIGHT)
 Pixi.renderer.backgroundColor = 0x458B00
 Pixi.render = function(container) {this.renderer.render(container)}
-document.body.appendChild(Pixi.renderer.view)
+document.getElementById("frame").appendChild(Pixi.renderer.view)
 
 class Game extends Pixi.Container {
     constructor() {
@@ -144,12 +144,12 @@ class Person extends Pixi.extras.AnimatedSprite {
     update() {
         this.scale.x = this.direction
         
-        if(this.position.x < WIDTH / 2) {
-            this.textures = PERSON.WALK
-            super.update(0.2)
-        } else {
+        if(me.position.x >= truck.position.x) {
             this.textures = PERSON.PUSH
             super.update(0.15)
+        } else {
+            this.textures = PERSON.WALK
+            super.update(0.2)
         }
     }
 }
@@ -194,6 +194,9 @@ var loop = new Afloop(function(delta) {
         me.direction = +1
         if(me.position.x > WIDTH) {
             me.position.x = WIDTH
+        }
+        if(me.position.x >= truck.position.x) {
+            me.position.x = truck.position.x
         }
         me.sync()
     }

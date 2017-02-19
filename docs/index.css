@@ -1,0 +1,90 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    image-rendering: pixelated;
+}
+
+@font-face {
+    font-family: "font";
+    src: url("font.ttf") format("truetype");
+}
+
+html {
+    font-family: "font";
+    background-color: #222;
+}
+
+#frame {
+    top: 0em;
+    left: 0em;
+    right: 0em;
+    bottom: 0em;
+    margin: auto;
+    position: fixed;
+    overflow: hidden;
+}
+
+@media(min-aspect-ratio: 16/9) {
+    #frame {
+        font-size: 11.111vh;
+        width: 177.778vh;
+        height: 100vh;
+    }
+}
+
+@media(max-aspect-ratio: 16/9) {
+    #frame {
+        font-size: 6.25vw;
+        height: 56.25vw;
+        width: 100vw;
+    }
+}
+
+canvas {
+    top: 0em;
+    left: 0em;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+#you-win {
+    display: none;
+    padding-top: 0.75em;
+    text-align: center;
+    
+    color: white;
+    text-shadow: 0.1em 0.1em black;
+    
+    user-select: none;
+    cursor: default;
+}
+
+#players-playing {
+    position: absolute;
+    left: 0.25em;
+    top: 0.25em;
+    
+    color: white;
+    text-shadow: 0.1em 0.1em black;
+    
+    user-select: none;
+    cursor: default;
+}
+
+#share {
+    position: absolute;
+    right: 0.25em;
+    top: 0.25em;
+    text-align: center;
+}
+
+small, a {
+    display: block;
+    font-size: 0.5em;
+    color: white;
+    text-decoration: none;
+    text-shadow: 0.1em 0.1em black;
+}

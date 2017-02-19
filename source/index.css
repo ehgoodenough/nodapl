@@ -7,7 +7,13 @@
     image-rendering: pixelated;
 }
 
+@font-face {
+    font-family: "font";
+    src: url("font.ttf") format("truetype");
+}
+
 html {
+    font-family: "font";
     background-color: #222;
 }
 
@@ -23,6 +29,7 @@ html {
 
 @media(min-aspect-ratio: 16/9) {
     #frame {
+        font-size: 11.111vh;
         width: 177.778vh;
         height: 100vh;
     }
@@ -30,12 +37,23 @@ html {
 
 @media(max-aspect-ratio: 16/9) {
     #frame {
+        font-size: 6.25vw;
         height: 56.25vw;
         width: 100vw;
     }
 }
 
 canvas {
+    top: 0em;
+    left: 0em;
+    z-index: -1;
     width: 100%;
     height: 100%;
+    position: absolute;
+}
+
+#you-win {
+    display: none;
+    padding-top: 1em;
+    text-align: center;
 }

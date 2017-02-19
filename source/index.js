@@ -10,6 +10,7 @@ var HEIGHT = 900
 
 var PIXEL = Pixi.Texture.fromImage(require("images/pixel.png"))
 var TRUCK = Pixi.Texture.fromImage(require("images/truck.png"))
+var BACKGROUND = Pixi.Texture.fromImage(require("images/background.png"))
 
 var PERSON = {
     WALK: [
@@ -74,11 +75,15 @@ Firebase.initializeApp({
 // Sky //
 ////////
 
-var sky = new Pixi.Sprite(PIXEL)
-sky.scale.x = WIDTH
-sky.scale.y = HEIGHT / 2
-sky.tint = 0x87CEEB
-game.addChild(sky)
+// var sky = new Pixi.Sprite(PIXEL)
+// sky.scale.x = WIDTH
+// sky.scale.y = HEIGHT / 2
+// sky.tint = 0x87CEEB
+// game.addChild(sky)
+var background = new Pixi.Sprite(BACKGROUND)
+background.scale.x = 4
+background.scale.y = 4
+game.addChild(background)
 
 ////////////
 // Truck //
@@ -88,14 +93,49 @@ class Truck extends Pixi.Sprite {
     constructor() {
         super(TRUCK)
         
-        this.scale.x = 3
-        this.scale.y = 3
+        this.scale.x = 2
+        this.scale.y = 2
         
         this.anchor.x = 0
         this.anchor.y = 1
         
-        this.position.x = WIDTH / 8 
+        this.position.x = WIDTH / 8
         this.position.y = HEIGHT - 10
+        
+        this.startmark = WIDTH / 8
+    }
+    update() {
+        if(this.isDefeated == true) {
+            return
+        }
+        
+        var maxmark = this.startmark
+        this.parent.children.forEach((child) => {
+            if(child instanceof Person) {
+                if(maxmark < child.position.x) {
+                    maxmark = child.position.x
+                }
+            }
+        })
+        
+        this.position.x = maxmark
+        
+        if(this.position.x >= WIDTH) {
+            this.isDefeated = true
+        }
+    }
+    getPushback() {
+        // if(Object.keys(this.parent.persons).length <= 1) {
+        //     if(this.position.x < (WIDTH / 3)) {
+        //         return 1
+        //     } else {
+        //         return 0
+        //     }
+        // }
+        // 
+        // return 2
+        
+        return 1
     }
 }
 
@@ -116,7 +156,7 @@ class Person extends Pixi.extras.AnimatedSprite {
         this.isPerson = true
         
         this.id = data.id || ShortID.generate()
-        this.position.x = !!data.position ? data.position.x : WIDTH / 8
+        this.position.x = !!data.position ? data.position.x : WIDTH / 16
         this.position.y = !!data.position ? data.position.y : HEIGHT * 0.75
         
         this.anchor.x = 0.5
@@ -144,12 +184,15 @@ class Person extends Pixi.extras.AnimatedSprite {
     update() {
         this.scale.x = this.direction
         
-        if(me.position.x >= truck.position.x) {
-            this.textures = PERSON.PUSH
-            super.update(0.15)
-        } else {
-            this.textures = PERSON.WALK
-            super.update(0.2)
+        if(this.isMoving) {
+            this.isMoving = false
+            if(this.direction > 0 && truck.position.x - this.position.x < 16) {
+                this.textures = PERSON.PUSH
+                super.update(0.15)
+            } else {
+                this.textures = PERSON.WALK
+                super.update(0.2)
+            }
         }
     }
 }
@@ -172,6 +215,7 @@ var loop = new Afloop(function(delta) {
         if(me.position.y < HEIGHT / 2) {
             me.position.y = HEIGHT / 2
         }
+        me.isMoving = true
         me.sync()
     }
     if(Keyb.isDown("S") || Keyb.isDown("<down>")) {
@@ -179,6 +223,7 @@ var loop = new Afloop(function(delta) {
         if(me.position.y > HEIGHT) {
             me.position.y = HEIGHT
         }
+        me.isMoving = true
         me.sync()
     }
     if(Keyb.isDown("A") || Keyb.isDown("<left>")) {
@@ -187,6 +232,7 @@ var loop = new Afloop(function(delta) {
         if(me.position.x < 0) {
             me.position.x = 0
         }
+        me.isMoving = true
         me.sync()
     }
     if(Keyb.isDown("D") || Keyb.isDown("<right>")) {
@@ -196,18 +242,27 @@ var loop = new Afloop(function(delta) {
             me.position.x = WIDTH
         }
         if(me.position.x >= truck.position.x) {
-            me.position.x = truck.position.x
+            me.position.x = truck.position.x + truck.getPushback()
         }
+        me.isMoving = true
         me.sync()
     }
     
     game.children.forEach((child) => {
         if(child.update instanceof Function) {
-            child.update(0.2)
+            child.update(delta)
         }
     })
     
     Pixi.render(game)
+    
+    if(truck.isDefeated) {
+        document.getElementById("youve-yet-won").style.display = "none"
+        document.getElementById("you-win").style.display = "block"
+    } else {
+        document.getElementById("youve-yet-won").style.display = "block"
+        document.getElementById("you-win").style.display = "none"
+    }
 })
 
 ///////////
@@ -225,6 +280,10 @@ Firebase.database().ref("/users").on("child_changed", function(data) {
     data = data.val()
     if(data.id != me.id) {
         if(game.persons[data.id]) {
+            if(game.persons[data.id].position.x != data.position.x
+            || game.persons[data.id].position.y != data.position.y) {
+                game.persons[data.id].isMoving = true
+            }
             game.persons[data.id].position.x = data.position.x
             game.persons[data.id].position.y = data.position.y
             game.persons[data.id].direction = data.direction

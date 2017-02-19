@@ -27,6 +27,18 @@ var PERSON = {
     ],
 }
 
+var HATS = [
+    Pixi.Texture.fromImage(require("images/hats/1.png")),
+    Pixi.Texture.fromImage(require("images/hats/2.png")),
+    Pixi.Texture.fromImage(require("images/hats/3.png")),
+    Pixi.Texture.fromImage(require("images/hats/4.png")),
+    Pixi.Texture.fromImage(require("images/hats/5.png")),
+    Pixi.Texture.fromImage(require("images/hats/6.png")),
+    Pixi.Texture.fromImage(require("images/hats/7.png")),
+    Pixi.Texture.fromImage(require("images/hats/8.png")),
+    Pixi.Texture.fromImage(require("images/hats/9.png")),
+]
+
 ///////////
 // Pixi //
 /////////
@@ -81,8 +93,6 @@ Firebase.initializeApp({
 // sky.tint = 0x87CEEB
 // game.addChild(sky)
 var background = new Pixi.Sprite(BACKGROUND)
-background.scale.x = 4
-background.scale.y = 4
 game.addChild(background)
 
 ////////////
@@ -93,8 +103,8 @@ class Truck extends Pixi.Sprite {
     constructor() {
         super(TRUCK)
         
-        this.scale.x = 2
-        this.scale.y = 2
+        this.scale.x = 0.8
+        this.scale.y = 0.8
         
         this.anchor.x = 0
         this.anchor.y = 1
@@ -164,6 +174,16 @@ class Person extends Pixi.extras.AnimatedSprite {
         
         this.speed = data.speed || 0.5
         this.direction = data.direction || +1
+        
+        var hatnum = data.hatnum || Math.floor(HATS.length * Math.random())
+        this.hat = new Pixi.Sprite(HATS[hatnum])
+        this.hat.num = hatnum
+        this.hat.anchor.x = 0.5
+        this.hat.anchor.y = 0.5
+        this.hat.scale.x = 0.8
+        this.hat.scale.y = 0.8
+        this.hat.position.y = -30
+        this.addChild(this.hat)
     }
     toData() {
         return {
@@ -173,6 +193,7 @@ class Person extends Pixi.extras.AnimatedSprite {
                 "x": this.position.x,
                 "y": this.position.y,
             },
+            "hatnum": this.hat.num
         }
     }
     sync() {

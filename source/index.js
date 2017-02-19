@@ -149,8 +149,6 @@ class Truck extends Pixi.Sprite {
             }
         }
         
-        console.log(count)
-        
         if(this.position.x > this.startmark + (UNIT * count)) {
             return 0
         } else {
@@ -247,13 +245,10 @@ me.sync()
 /////////
 
 var mouse = false
-document.addEventListener("mousedown", function() {
-    mouse = true
-})
-
-document.addEventListener("mouseup", function() {
-    mouse = false
-})
+document.addEventListener("mousedown", function() {mouse = true})
+document.addEventListener("mouseup", function() {mouse = false})
+document.addEventListener("touchstart", function() {mouse = true})
+document.addEventListener("touchend", function() {mouse = false})
 
 var loop = new Afloop(function(delta) {
     

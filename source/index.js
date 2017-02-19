@@ -5,11 +5,26 @@ var Statgrab = require("statgrab/do")
 var Firebase = require("firebase")
 var ShortID = require("shortid")
 
-var WIDTH = 1200
+var WIDTH = 1600
 var HEIGHT = 900
 
 var PIXEL = Pixi.Texture.fromImage(require("images/pixel.png"))
 var TRUCK = Pixi.Texture.fromImage(require("images/truck.png"))
+
+var PERSON = {
+    WALK: [
+        Pixi.Texture.fromImage(require("images/walk1.png")),
+        Pixi.Texture.fromImage(require("images/walk2.png")),
+        Pixi.Texture.fromImage(require("images/walk3.png")),
+        Pixi.Texture.fromImage(require("images/walk4.png")),
+    ],
+    PUSH: [
+        Pixi.Texture.fromImage(require("images/push1.png")),
+        Pixi.Texture.fromImage(require("images/push2.png")),
+        Pixi.Texture.fromImage(require("images/push3.png")),
+        Pixi.Texture.fromImage(require("images/push4.png")),
+    ],
+}
 
 ///////////
 // Pixi //
@@ -91,11 +106,12 @@ game.addChild(truck)
 // Persons //
 ////////////
 
-class Person extends Pixi.Sprite {
+class Person extends Pixi.extras.AnimatedSprite {
     constructor(person = new Object()) {
-        super(PIXEL)
-        this.scale.x = 32
-        this.scale.y = 64
+        // super(PIXEL)
+        // this.scale.x = 32
+        // this.scale.y = 64
+        super(PERSON.WALK)
         
         this.isPerson = true
         
@@ -123,9 +139,19 @@ class Person extends Pixi.Sprite {
     syncOnDisconnect() {
         Firebase.database().ref("/users/" + this.id).onDisconnect().remove()
     }
+    update() {
+        if(this.position.x < WIDTH / 2) {
+            this.textures = PERSON.WALK
+            super.update(0.2)
+        } else {
+            this.textures = PERSON.PUSH
+            super.update(0.15)
+        }
+    }
 }
 
 var me = new Person()
+window.me = me
 
 game.addChild(me)
 me.syncOnDisconnect()
@@ -165,6 +191,12 @@ var loop = new Afloop(function(delta) {
         }
         me.sync()
     }
+    
+    game.children.forEach((child) => {
+        if(child.update instanceof Function) {
+            child.update(0.2)
+        }
+    })
     
     Pixi.render(game)
 })

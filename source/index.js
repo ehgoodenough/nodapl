@@ -107,7 +107,7 @@ game.addChild(truck)
 ////////////
 
 class Person extends Pixi.extras.AnimatedSprite {
-    constructor(person = new Object()) {
+    constructor(data = new Object()) {
         // super(PIXEL)
         // this.scale.x = 32
         // this.scale.y = 64
@@ -115,22 +115,24 @@ class Person extends Pixi.extras.AnimatedSprite {
         
         this.isPerson = true
         
-        this.id = person.id || ShortID.generate()
-        this.position.x = !!person.position ? person.position.x : WIDTH / 8
-        this.position.y = !!person.position ? person.position.y : HEIGHT * 0.75
+        this.id = data.id || ShortID.generate()
+        this.position.x = !!data.position ? data.position.x : WIDTH / 8
+        this.position.y = !!data.position ? data.position.y : HEIGHT * 0.75
         
         this.anchor.x = 0.5
         this.anchor.y = 0.5
         
-        this.speed = 0.5
+        this.speed = data.speed || 0.5
+        this.direction = data.direction || +1
     }
     toData() {
         return {
             "id": this.id,
+            "direction": this.direction,
             "position": {
                 "x": this.position.x,
                 "y": this.position.y,
-            }
+            },
         }
     }
     sync() {
@@ -140,6 +142,8 @@ class Person extends Pixi.extras.AnimatedSprite {
         Firebase.database().ref("/users/" + this.id).onDisconnect().remove()
     }
     update() {
+        this.scale.x = this.direction
+        
         if(this.position.x < WIDTH / 2) {
             this.textures = PERSON.WALK
             super.update(0.2)
@@ -179,6 +183,7 @@ var loop = new Afloop(function(delta) {
     }
     if(Keyb.isDown("A") || Keyb.isDown("<left>")) {
         me.position.x -= me.speed * delta
+        me.direction = -1
         if(me.position.x < 0) {
             me.position.x = 0
         }
@@ -186,6 +191,7 @@ var loop = new Afloop(function(delta) {
     }
     if(Keyb.isDown("D") || Keyb.isDown("<right>")) {
         me.position.x += me.speed * delta
+        me.direction = +1
         if(me.position.x > WIDTH) {
             me.position.x = WIDTH
         }
@@ -218,6 +224,7 @@ Firebase.database().ref("/users").on("child_changed", function(data) {
         if(game.persons[data.id]) {
             game.persons[data.id].position.x = data.position.x
             game.persons[data.id].position.y = data.position.y
+            game.persons[data.id].direction = data.direction
         }
     }
 })
@@ -230,3 +237,7 @@ Firebase.database().ref("/users").on("child_removed", function(data) {
         }
     }
 })
+
+window.kick = function() {
+    Firebase.database().ref("/users").remove()
+}

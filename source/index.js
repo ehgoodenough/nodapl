@@ -37,6 +37,12 @@ var HATS = [
     Pixi.Texture.fromImage(require("images/hats/7.png")),
     Pixi.Texture.fromImage(require("images/hats/8.png")),
     Pixi.Texture.fromImage(require("images/hats/9.png")),
+    Pixi.Texture.fromImage(require("images/hats/10.png")),
+    Pixi.Texture.fromImage(require("images/hats/11.png")),
+    Pixi.Texture.fromImage(require("images/hats/12.png")),
+    Pixi.Texture.fromImage(require("images/hats/13.png")),
+    Pixi.Texture.fromImage(require("images/hats/14.png")),
+    Pixi.Texture.fromImage(require("images/hats/15.png")),
 ]
 
 ///////////
@@ -293,6 +299,8 @@ var loop = new Afloop(function(delta) {
         document.getElementById("youve-yet-won").style.display = "block"
         document.getElementById("you-win").style.display = "none"
     }
+    
+    document.getElementById("players-playing").innerHTML = "People Needed: " + Object.keys(game.persons).length + "/10"
 })
 
 ///////////

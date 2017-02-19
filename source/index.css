@@ -1,8 +1,6 @@
 * {
     margin: 0;
     padding: 0;
-    cursor: default;
-    user-select: none;
     box-sizing: border-box;
     image-rendering: pixelated;
 }
@@ -54,6 +52,39 @@ canvas {
 
 #you-win {
     display: none;
-    padding-top: 1em;
+    padding-top: 0.75em;
     text-align: center;
+    
+    color: white;
+    text-shadow: 0.1em 0.1em black;
+    
+    user-select: none;
+    cursor: default;
+}
+
+#players-playing {
+    position: absolute;
+    left: 0.25em;
+    top: 0.25em;
+    
+    color: white;
+    text-shadow: 0.1em 0.1em black;
+    
+    user-select: none;
+    cursor: default;
+}
+
+#share {
+    position: absolute;
+    right: 0.25em;
+    top: 0.25em;
+    text-align: center;
+}
+
+small, a {
+    display: block;
+    font-size: 0.5em;
+    color: white;
+    text-decoration: none;
+    text-shadow: 0.1em 0.1em black;
 }

@@ -173,7 +173,7 @@ class Person extends Pixi.extras.AnimatedSprite {
         
         this.id = data.id || ShortID.generate()
         this.position.x = !!data.position ? data.position.x : WIDTH / 16
-        this.position.y = !!data.position ? data.position.y : HEIGHT * 0.75
+        this.position.y = !!data.position ? data.position.y : (Math.random() * (HEIGHT / 2)) + (HEIGHT / 2)
         
         this.anchor.x = 0.5
         this.anchor.y = 0.5
@@ -211,18 +211,18 @@ class Person extends Pixi.extras.AnimatedSprite {
     update() {
         this.scale.x = this.direction
         
-        if(this.isMoving) {
-            this.isMoving = false
-            if(this.direction > 0 && truck.position.x - this.position.x < 16) {
-                this.textures = PERSON.PUSH
-                this.hat.position.y = -25
-                super.update(0.15)
-            } else {
-                this.textures = PERSON.WALK
-                this.hat.position.y = -30
-                super.update(0.2)
-            }
+        // if(this.isMoving) {
+        //     this.isMoving = false
+        if(this.direction > 0 && truck.position.x - this.position.x < 16) {
+            this.textures = PERSON.PUSH
+            this.hat.position.y = -25
+            super.update(0.15)
+        } else {
+            this.textures = PERSON.WALK
+            this.hat.position.y = -30
+            super.update(0.2)
         }
+        //}
     }
 }
 
@@ -236,6 +236,15 @@ me.sync()
 ///////////
 // Loop //
 /////////
+
+var mouse = false
+document.addEventListener("mousedown", function() {
+    mouse = true
+})
+
+document.addEventListener("mouseup", function() {
+    mouse = false
+})
 
 var loop = new Afloop(function(delta) {
     
@@ -264,7 +273,7 @@ var loop = new Afloop(function(delta) {
         me.isMoving = true
         me.sync()
     }
-    if(Keyb.isDown("D") || Keyb.isDown("<right>")) {
+    if(Keyb.isDown("D") || Keyb.isDown("<right>") || mouse) {
         me.position.x += me.speed * delta
         me.direction = +1
         if(me.position.x > WIDTH) {

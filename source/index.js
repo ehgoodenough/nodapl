@@ -175,7 +175,7 @@ class Person extends Pixi.extras.AnimatedSprite {
         this.speed = data.speed || 0.5
         this.direction = data.direction || +1
         
-        var hatnum = data.hatnum || Math.floor(HATS.length * Math.random())
+        var hatnum = data.hatnum != undefined ? data.hatnum : Math.floor(HATS.length * Math.random())
         this.hat = new Pixi.Sprite(HATS[hatnum])
         this.hat.num = hatnum
         this.hat.anchor.x = 0.5
@@ -209,9 +209,11 @@ class Person extends Pixi.extras.AnimatedSprite {
             this.isMoving = false
             if(this.direction > 0 && truck.position.x - this.position.x < 16) {
                 this.textures = PERSON.PUSH
+                this.hat.position.y = -25
                 super.update(0.15)
             } else {
                 this.textures = PERSON.WALK
+                this.hat.position.y = -30
                 super.update(0.2)
             }
         }
@@ -273,6 +275,13 @@ var loop = new Afloop(function(delta) {
         if(child.update instanceof Function) {
             child.update(delta)
         }
+    })
+    
+    game.children.sort(function(a, b) {
+        if(a instanceof Person && b instanceof Person) {
+            return a.position.y >= b.position.y
+        }
+        return 0
     })
     
     Pixi.render(game)
